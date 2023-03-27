@@ -54,7 +54,7 @@ public class MainActivity extends AppCompatActivity {
     private WeatherRVAdapter weatherRVAdapter;
     private LocationManager locationManager;
     private int PERMISSION_CODE = 1;
-    private String cityName;
+    public String cityName;
 
 
     @Override
@@ -85,6 +85,8 @@ public class MainActivity extends AppCompatActivity {
         }
         Location location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
         cityName = getCityName(location.getLatitude(), location.getLongitude());
+        System.out.println(cityName);
+//        cityName = "Rangpur";
         System.out.println("City Name: "+cityName);
         getWeatherInfo(cityName);
 
@@ -124,7 +126,7 @@ public class MainActivity extends AppCompatActivity {
             List<Address> addresses = gcd.getFromLocation(latitude, longitude, 1);
             for(Address adr: addresses){
                 if(adr != null){
-                    String city = adr.getLocality();
+                    String city = adr.getAdminArea();
                     if(city!=null && !city.equals("")){
                         cityName = city;
                     }else{
