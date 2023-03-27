@@ -5,6 +5,8 @@ import static com.example.weatherinfo.R.id.idIVIcon;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -31,6 +33,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
@@ -54,6 +57,8 @@ public class MainActivity extends AppCompatActivity {
     private WeatherRVAdapter weatherRVAdapter;
     private LocationManager locationManager;
     private int PERMISSION_CODE = 1;
+    private TextInputLayout textInputLayout;
+    private TextView forecastTV;
     public String cityName;
 
 
@@ -70,12 +75,15 @@ public class MainActivity extends AppCompatActivity {
         conditionTV = findViewById(R.id.idTVCondition);
         weatherRV = findViewById(R.id.idRVWeather);
         cityEdt = findViewById(R.id.idEdtCity);
+        forecastTV = findViewById(R.id.idTVForecast);
         backIV = findViewById(R.id.idIVBack);
         iconIV = findViewById(idIVIcon);
+        textInputLayout = findViewById(R.id.idTILCity);
         searchIV = findViewById(R.id.idIVSearch);
         weatherRVModelArrayList = new ArrayList<>();
         weatherRVAdapter = new WeatherRVAdapter(this, weatherRVModelArrayList);
         weatherRV.setAdapter(weatherRVAdapter);
+
 
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
 
@@ -86,8 +94,7 @@ public class MainActivity extends AppCompatActivity {
         Location location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
         cityName = getCityName(location.getLatitude(), location.getLongitude());
         System.out.println(cityName);
-//        cityName = "Rangpur";
-        System.out.println("City Name: "+cityName);
+
         getWeatherInfo(cityName);
 
         searchIV.setOnClickListener(new View.OnClickListener() {
@@ -112,7 +119,7 @@ public class MainActivity extends AppCompatActivity {
                 if(grantResults.length>0 && grantResults[0]==PackageManager.PERMISSION_GRANTED){
                     Toast.makeText(this, "Permission Granted..", Toast.LENGTH_SHORT).show();
                 }else{
-                    Toast.makeText(this, "Please provide permission", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "Please Location provide permission", Toast.LENGTH_SHORT).show();
                     finish();
                 }
             }
@@ -167,10 +174,22 @@ public class MainActivity extends AppCompatActivity {
                     conditionTV.setText(condition);
                     if(isDay == 1){
                         //https://cdn5.f-cdn.com/contestentries/329593/14249726/5699389419de1_thumb900.jpg
+                        //set color to black
+                        temperatureTV.setTextColor(Color.BLACK);
+                        conditionTV.setTextColor(Color.BLACK);
+                        cityNameTV.setTextColor(Color.BLACK);
+                        textInputLayout.setHintTextColor(ColorStateList.valueOf(Color.BLACK));
+                        forecastTV.setTextColor(Color.BLACK);
+                        cityEdt.setTextColor(Color.BLACK);
 
                         Picasso.get().load("https://t4.ftcdn.net/jpg/03/88/05/29/360_F_388052905_eYTQpbqPwuXOEXROA9zvF8PNzo5EsX8N.webp").into(backIV);
                     }else{
-
+                        temperatureTV.setTextColor(Color.WHITE);
+                        conditionTV.setTextColor(Color.WHITE);
+                        cityNameTV.setTextColor(Color.WHITE);
+                        textInputLayout.setHintTextColor(ColorStateList.valueOf(Color.WHITE));
+                        forecastTV.setTextColor(Color.WHITE);
+                        cityEdt.setTextColor(Color.WHITE);
                         Picasso.get().load("https://images.theconversation.com/files/427950/original/file-20211022-13-1yw1v30.jpeg?ixlib=rb-1.1.0&q=45&auto=format&w=1000&fit=clip").into(backIV);
                     }
                     JSONObject forecast = response.getJSONObject("forecast");
@@ -194,10 +213,8 @@ public class MainActivity extends AppCompatActivity {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                loadingPB.setVisibility(View.GONE);
-                homeRL.setVisibility(View.VISIBLE);
-                System.out.println("Line 191");
-                System.out.println(error.toString());
+
+                cityNameTV.setText("Not Found");
                 Toast.makeText(MainActivity.this, "Please Enter a valid city name", Toast.LENGTH_SHORT).show();
             }
         });
