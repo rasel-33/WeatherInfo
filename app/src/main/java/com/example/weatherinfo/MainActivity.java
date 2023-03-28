@@ -4,6 +4,8 @@ import static com.example.weatherinfo.R.id.idIVIcon;
 
 
 import android.Manifest;
+import android.app.Activity;
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
@@ -15,6 +17,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
@@ -105,6 +108,7 @@ public class MainActivity extends AppCompatActivity {
                     Toast.makeText(MainActivity.this, "Please enter city name", Toast.LENGTH_SHORT).show();
                 }else{
                     cityNameTV.setText(cityName);
+                    hideKeyboardFrom(MainActivity.this, view);
                     getWeatherInfo(city);
                 }
             }
@@ -220,6 +224,11 @@ public class MainActivity extends AppCompatActivity {
         });
 
         requestQueue.add(jsonObjectRequest);
+    }
+
+    public static void hideKeyboardFrom(Context context, View view) {
+        InputMethodManager imm = (InputMethodManager) context.getSystemService(Activity.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 
 }
